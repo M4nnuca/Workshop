@@ -10,6 +10,14 @@ public class PlayerMove : MonoBehaviour
     public float speed;
 
     private float inputx;
+    private bool inputJump;
+
+    [SerializeField] private Transform checkGround;
+    [SerializeField] private LayerMask layerMask;
+
+   
+    [SerializeField] private float forceJump;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +28,7 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         InputLogic();
+        JumpLogic();
     }
 
     private void FixedUpdate()
@@ -27,9 +36,20 @@ public class PlayerMove : MonoBehaviour
         Movelogic();
     }
 
+    public Vector2 MoveValue 
+    {
+        get { return move; }
+        set { move = value;}
+    }
+    
+    public bool InGround()
+    {
+        return Physics2D.OverlapCircle(checkGround.position, 0.3f, LayerMask.GetMask("Ground"));
+    }
     public void InputLogic()
     {
         inputx = Input.GetAxisRaw("Horizontal");
+        inputJump = Input.GetKeyDown(KeyCode.Space);
     }
 
     public void Movelogic()
@@ -38,11 +58,18 @@ public class PlayerMove : MonoBehaviour
         rb.velocity = move;
     }
 
-
-
-
-
-
-
-
+    public void JumpLogic()
+    {
+        if (inputJump == true && InGround() == true)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, forceJump);
+        }
+    }
 }
+
+
+
+
+
+
+
